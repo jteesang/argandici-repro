@@ -12,4 +12,12 @@ export class ProductsService {
   findOne(id: string) {
     return this.prisma.product.findUnique({ where: { id } });
   }
+
+  async updateStock(productId: string, stock: number) {
+    return this.prisma.product.update({
+      where: { id: productId },
+      data: { stock },
+    });
+  }
+
 }

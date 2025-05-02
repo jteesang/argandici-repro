@@ -15,17 +15,36 @@ export class OrdersService {
       throw new BadRequestException('Email requis pour commande invitée');
     }
 
-    const products = await Promise.all(
-      dto.items.map((item) =>
-        this.prisma.product.findUnique({ where: { id: item.productId } }),
-      ),
-    );
+    const productIds = dto.items.map((i) => i.productId);
 
-    const total = dto.items.reduce((sum, item, i) => {
-      return sum + (products[i]?.price ?? 0) * item.quantity;
+    // ⚠️ Une seule requête pour récupérer tous les produits concernés
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: productIds } },
+    });
+
+    const productMap = new Map(products.map((p) => [p.id, p]));
+
+    // 🔍 Vérification de disponibilité du stock
+    for (const item of dto.items) {
+      const product = productMap.get(item.productId);
+      if (!product) {
+        throw new NotFoundException(`Produit introuvable`);
+      }
+      if (product.stock < item.quantity) {
+        throw new BadRequestException(
+          `Stock insuffisant pour le produit : ${product.name}`,
+        );
+      }
+    }
+
+    // 💰 Calcul du total
+    const total = dto.items.reduce((sum, item) => {
+      const product = productMap.get(item.productId);
+      return sum + (product?.price ?? 0) * item.quantity;
     }, 0);
 
-    return this.prisma.order.create({
+    // 🧾 Création de la commande
+    const order = await this.prisma.order.create({
       data: {
         userId,
         email: userId ? undefined : dto.email,
@@ -40,6 +59,18 @@ export class OrdersService {
       },
       include: { items: true },
     });
+
+    // 📉 Décrémentation du stock
+    await Promise.all(
+      dto.items.map((item) =>
+        this.prisma.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.quantity } },
+        }),
+      ),
+    );
+
+    return order;
   }
 
   async findAll() {
