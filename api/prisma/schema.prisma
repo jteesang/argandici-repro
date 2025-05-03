@@ -36,6 +36,9 @@ model Order {
   userId     String?      // <== facultatif
   items      OrderItem[]
   email      String?      // facultatif pour guest checkout
+  shippingProvider ShippingProvider?
+  trackingNumber   String?
+  shippingStatus   ShippingStatus @default(PREPARING)
 }
 
 model OrderItem {
@@ -56,5 +59,20 @@ enum OrderStatus {
   PENDING
   PAID
   SHIPPED
+  CANCELLED
+}
+
+enum ShippingProvider {
+  COLISSIMO
+  MONDIAL_RELAY
+  LA_POSTE
+  CHRONOPOST
+}
+
+enum ShippingStatus {
+  PREPARING
+  SHIPPED
+  IN_TRANSIT
+  DELIVERED
   CANCELLED
 }

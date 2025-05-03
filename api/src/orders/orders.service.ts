@@ -5,10 +5,15 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { MailService } from '../mail/mail.service';
+import { generateOrderEmailHtml } from '../mail/templates/order-confirmation';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly mailService: MailService,
+  ) {}
 
   async create(userId: string | null, dto: CreateOrderDto) {
     if (!userId && !dto.email) {
@@ -57,7 +62,13 @@ export class OrdersService {
           })),
         },
       },
-      include: { items: true },
+      include: {
+        items: {
+          include: {
+            product: true, // ✅ on inclut les infos produit pour chaque item
+          },
+        },
+      },
     });
 
     // 📉 Décrémentation du stock
@@ -69,6 +80,26 @@ export class OrdersService {
         }),
       ),
     );
+
+    const email = userId
+      ? (await this.prisma.user.findUnique({ where: { id: userId } }))?.email
+      : dto.email;
+
+    if (email) {
+      //   const itemsList = order.items
+      //     .map((i) => `- ${i.quantity} x produit ${i.productId}`)
+      //     .join('<br>');
+
+      //   const html = `
+      //   <p>Merci pour votre commande !</p>
+      //   <p><strong>Commande n°${order.id}</strong></p>
+      //   <p>Total : <strong>${order.total}€</strong></p>
+      //   <p>Produits :</p>
+      //   <p>${itemsList}</p>
+      // `;
+      const html = generateOrderEmailHtml(order);
+      await this.mailService.sendOrderConfirmation(email, html);
+    }
 
     return order;
   }
