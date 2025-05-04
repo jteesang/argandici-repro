@@ -8,13 +8,14 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { MailService } from '../mail/mail.service';
 import { generateOrderEmailHtml } from '../mail/templates/order-confirmation';
 import { UpdateShippingDto } from './dto/update-shipping.dto';
-import { ShippingProvider, ShippingStatus } from '@prisma/client';
+import { StripeService } from '../stripe/stripe.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private prisma: PrismaService,
     private readonly mailService: MailService,
+    private readonly stripeService: StripeService,
   ) { }
 
   async create(userId: string | null, dto: CreateOrderDto) {
@@ -73,6 +74,15 @@ export class OrdersService {
       },
     });
 
+    const checkoutUrl = await this.stripeService.createCheckoutSession(
+      order.id, // <-- Passez l'ID de la commande
+      dto.items.map((item) => ({
+        name: productMap.get(item.productId)!.name,
+        price: productMap.get(item.productId)!.price,
+        quantity: item.quantity,
+      })),
+    );
+
     // 📉 Décrémentation du stock
     await Promise.all(
       dto.items.map((item) =>
@@ -92,7 +102,7 @@ export class OrdersService {
       await this.mailService.sendOrderConfirmation(email, html);
     }
 
-    return order;
+    return { ...order, checkoutUrl };
   }
 
   async updateShipping(orderId: string, dto: UpdateShippingDto) {
