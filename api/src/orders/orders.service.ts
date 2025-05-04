@@ -7,13 +7,15 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { MailService } from '../mail/mail.service';
 import { generateOrderEmailHtml } from '../mail/templates/order-confirmation';
+import { UpdateShippingDto } from './dto/update-shipping.dto';
+import { ShippingProvider, ShippingStatus } from '@prisma/client';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private prisma: PrismaService,
     private readonly mailService: MailService,
-  ) {}
+  ) { }
 
   async create(userId: string | null, dto: CreateOrderDto) {
     if (!userId && !dto.email) {
@@ -86,22 +88,59 @@ export class OrdersService {
       : dto.email;
 
     if (email) {
-      //   const itemsList = order.items
-      //     .map((i) => `- ${i.quantity} x produit ${i.productId}`)
-      //     .join('<br>');
-
-      //   const html = `
-      //   <p>Merci pour votre commande !</p>
-      //   <p><strong>Commande n°${order.id}</strong></p>
-      //   <p>Total : <strong>${order.total}€</strong></p>
-      //   <p>Produits :</p>
-      //   <p>${itemsList}</p>
-      // `;
       const html = generateOrderEmailHtml(order);
       await this.mailService.sendOrderConfirmation(email, html);
     }
 
     return order;
+  }
+
+  async updateShipping(orderId: string, dto: UpdateShippingDto) {
+    return this.prisma.order.update({
+      where: { id: orderId },
+      data: {
+        shippingProvider: dto.shippingProvider,
+        shippingStatus: dto.shippingStatus,
+        trackingNumber: dto.trackingNumber,
+      },
+    });
+  }
+
+  async cancel(orderId: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Commande introuvable');
+    }
+
+    const nonCancelableStatuses = ['SHIPPED', 'IN_TRANSIT', 'DELIVERED'];
+    if (nonCancelableStatuses.includes(order.shippingStatus)) {
+      throw new BadRequestException(
+        'Commande déjà expédiée, annulation impossible',
+      );
+    }
+
+    // ✅ Remettre les stocks
+    await Promise.all(
+      order.items.map((item) =>
+        this.prisma.product.update({
+          where: { id: item.productId },
+          data: { stock: { increment: item.quantity } },
+        }),
+      ),
+    );
+
+    // ✅ Marquer la commande comme annulée
+    return this.prisma.order.update({
+      where: { id: orderId },
+      data: {
+        status: 'CANCELLED',
+        shippingStatus: 'CANCELLED',
+      },
+    });
   }
 
   async findAll() {

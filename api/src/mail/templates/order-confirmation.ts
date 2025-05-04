@@ -33,7 +33,7 @@ export function generateOrderEmailHtml(order: any): string {
     <div style="background:#f5f5f5;padding:20px;text-align:center;">
       <img src="${logoUrl}" alt="Argan d'ici" width="120" />
       <h2 style="margin:10px 0;color:#8b5e3c;">Merci pour votre commande !</h2>
-      <p style="margin:0;color:#444;">Commande #${order.id} – ${date}</p>
+      <p style="margin:0;color:#444;">Commande #${order.id} - ${date}</p>
     </div>
     <div style="padding:20px;">
       <h3 style="margin-top:0;color:#444;">Détail de la commande :</h3>
