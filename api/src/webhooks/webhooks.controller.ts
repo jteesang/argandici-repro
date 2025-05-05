@@ -1,4 +1,3 @@
-// src/webhooks/webhooks.controller.ts
 import {
   Controller,
   Post,
@@ -47,7 +46,7 @@ export class StripeWebhooksController {
 
     let event: Stripe.Event;
     try {
-      // req.body is raw thanks to main.ts configuration
+      // req.body must be raw JSON (configured in main.ts)
       event = this.stripe.webhooks.constructEvent(
         req.body,
         signature,
@@ -63,7 +62,7 @@ export class StripeWebhooksController {
     }
 
     if (event.type === 'checkout.session.completed') {
-      const session = event.data.object;
+      const session = event.data.object; // <-- cast explicite
       const orderId = session.metadata?.orderId;
       if (!orderId) {
         this.logger.error(

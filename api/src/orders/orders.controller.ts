@@ -30,8 +30,9 @@ export class OrdersController {
   }
 
   // 🔐 accessible uniquement aux utilisateurs connectés (admin ou client)
-  @UseGuards(JwtAuthGuard)
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   findAll() {
     return this.ordersService.findAll();
   }
@@ -46,7 +47,7 @@ export class OrdersController {
 
   @Patch(':id/cancel')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Roles(Role.ADMIN)
   cancel(@Param('id') id: string) {
     return this.ordersService.cancel(id);
   }

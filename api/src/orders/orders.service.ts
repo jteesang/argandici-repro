@@ -23,35 +23,26 @@ export class OrdersService {
       throw new BadRequestException('Email requis pour commande invitée');
     }
 
-    const productIds = dto.items.map((i) => i.productId);
-
-    // ⚠️ Une seule requête pour récupérer tous les produits concernés
+    // 1. Récupérer et vérifier les produits
     const products = await this.prisma.product.findMany({
-      where: { id: { in: productIds } },
+      where: { id: { in: dto.items.map((i) => i.productId) } },
     });
-
-    const productMap = new Map(products.map((p) => [p.id, p]));
-
+    const map = new Map(products.map((p) => [p.id, p]));
     // 🔍 Vérification de disponibilité du stock
-    for (const item of dto.items) {
-      const product = productMap.get(item.productId);
-      if (!product) {
-        throw new NotFoundException(`Produit introuvable`);
-      }
-      if (product.stock < item.quantity) {
+    for (const it of dto.items) {
+      const prod = map.get(it.productId);
+      if (!prod) throw new NotFoundException('Produit introuvable');
+      if (prod.stock < it.quantity)
         throw new BadRequestException(
-          `Stock insuffisant pour le produit : ${product.name}`,
+          `Stock insuffisant pour le produit : ${prod.name}`,
         );
-      }
     }
 
-    // 💰 Calcul du total
-    const total = dto.items.reduce((sum, item) => {
-      const product = productMap.get(item.productId);
-      return sum + (product?.price ?? 0) * item.quantity;
-    }, 0);
-
-    // 🧾 Création de la commande
+    // 2. Créer la commande en PENDING
+    const total = dto.items.reduce(
+      (sum, it) => sum + map.get(it.productId)!.price * it.quantity,
+      0,
+    );
     const order = await this.prisma.order.create({
       data: {
         userId,
@@ -59,49 +50,46 @@ export class OrdersService {
         total,
         status: 'PENDING',
         items: {
-          create: dto.items.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
+          create: dto.items.map((it) => ({
+            productId: it.productId,
+            quantity: it.quantity,
           })),
         },
       },
-      include: {
-        items: {
-          include: {
-            product: true, // ✅ on inclut les infos produit pour chaque item
-          },
-        },
-      },
+      include: { items: { include: { product: true } } },
     });
 
+    // 3. Lancer Stripe Checkout
     const checkoutUrl = await this.stripeService.createCheckoutSession(
-      order.id, // <-- Passez l'ID de la commande
-      dto.items.map((item) => ({
-        name: productMap.get(item.productId)!.name,
-        price: productMap.get(item.productId)!.price,
-        quantity: item.quantity,
+      order.id,
+      order.items.map((it) => ({
+        name: it.product.name,
+        price: it.product.price,
+        quantity: it.quantity,
       })),
+      order.email ?? undefined,
     );
 
-    // 📉 Décrémentation du stock
+    // 4. Décrémenter le stock
     await Promise.all(
-      dto.items.map((item) =>
+      dto.items.map((it) =>
         this.prisma.product.update({
-          where: { id: item.productId },
-          data: { stock: { decrement: item.quantity } },
+          where: { id: it.productId },
+          data: { stock: { decrement: it.quantity } },
         }),
       ),
     );
 
+    // 5. Envoyer email de confirmation
     const email = userId
       ? (await this.prisma.user.findUnique({ where: { id: userId } }))?.email
       : dto.email;
-
     if (email) {
       const html = generateOrderEmailHtml(order);
       await this.mailService.sendOrderConfirmation(email, html);
     }
 
+    // retour: commande + url de checkout
     return { ...order, checkoutUrl };
   }
 
@@ -121,29 +109,24 @@ export class OrdersService {
       where: { id: orderId },
       include: { items: true },
     });
+    if (!order) throw new NotFoundException('Commande introuvable');
 
-    if (!order) {
-      throw new NotFoundException('Commande introuvable');
-    }
-
-    const nonCancelableStatuses = ['SHIPPED', 'IN_TRANSIT', 'DELIVERED'];
-    if (nonCancelableStatuses.includes(order.shippingStatus)) {
+    const blocked = ['SHIPPED', 'IN_TRANSIT', 'DELIVERED'];
+    if (blocked.includes(order.shippingStatus))
       throw new BadRequestException(
         'Commande déjà expédiée, annulation impossible',
       );
-    }
 
-    // ✅ Remettre les stocks
+    // remonter le stock
     await Promise.all(
-      order.items.map((item) =>
+      order.items.map((it) =>
         this.prisma.product.update({
-          where: { id: item.productId },
-          data: { stock: { increment: item.quantity } },
+          where: { id: it.productId },
+          data: { stock: { increment: it.quantity } },
         }),
       ),
     );
 
-    // ✅ Marquer la commande comme annulée
     return this.prisma.order.update({
       where: { id: orderId },
       data: {

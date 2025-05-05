@@ -1,23 +1,21 @@
-// src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as express from 'express';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  // 🚫 On désactive le bodyParser interne de Nest
   const app = await NestFactory.create(AppModule, {
-    bodyParser: false,
+    bodyParser: false, // désactive le parser JSON global
   });
 
-  // 1) RAW pour Stripe Webhook — capture brute du corps
-  app.use('/webhooks/stripe', express.raw({ type: 'application/json' }));
+  // --- Middleware pour le webhook Stripe ---
+  app.use('/webhooks/stripe', express.raw({ type: (_req) => true }));
 
-  // 2) JSON / URLENCODED pour toutes les autres routes
+  // --- JSON pour le reste de l’API ---
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // 3) Pipes globaux (ValidationPipe pour DTO, etc.)
+  // Validation des DTO
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   await app.listen(process.env.PORT ?? 3000);

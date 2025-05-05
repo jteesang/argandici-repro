@@ -18,10 +18,10 @@ export class StripeService {
   async createCheckoutSession(
     orderId: string,
     items: { name: string; price: number; quantity: number }[],
-  ) {
+    customerEmail?: string,
+  ): Promise<string> {
     const successUrl = this.config.get<string>('STRIPE_SUCCESS_URL');
     const cancelUrl = this.config.get<string>('STRIPE_CANCEL_URL');
-
     if (!successUrl || !cancelUrl) {
       throw new Error('STRIPE_SUCCESS_URL or STRIPE_CANCEL_URL not set');
     }
@@ -37,11 +37,18 @@ export class StripeService {
         },
         quantity: item.quantity,
       })),
-      metadata: { orderId },
+      metadata: { orderId }, // <-- metadata bien injecté
+      customer_email: customerEmail, // pour prefill si dispo
       success_url: successUrl,
       cancel_url: cancelUrl,
     });
 
-    return session.url;
+    // 🔍 debug pour vérifier la metadata EN DEV
+    console.log('[StripeService] session created:', {
+      id: session.id,
+      metadata: session.metadata,
+    });
+
+    return session.url!;
   }
 }
