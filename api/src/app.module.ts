@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config'; // 👈 important
+import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -11,6 +11,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { StripeModule } from './stripe/stripe.module';
 import { StripeController } from './stripe/stripe.controller';
 import { StripeWebhooksController } from './webhooks/webhooks.controller';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { StripeWebhooksController } from './webhooks/webhooks.controller';
     MailModule,
     PaymentsModule,
     StripeModule,
+    TelegramModule,
   ],
   controllers: [AppController, StripeController, StripeWebhooksController],
   providers: [AppService],
