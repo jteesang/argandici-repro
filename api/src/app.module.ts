@@ -10,8 +10,10 @@ import { MailModule } from './mail/mail.module';
 import { PaymentsModule } from './payments/payments.module';
 import { StripeModule } from './stripe/stripe.module';
 import { StripeController } from './stripe/stripe.controller';
-import { StripeWebhooksController } from './webhooks/webhooks.controller';
+import { StripeWebhooksController } from './webhooks/stripe-webhooks.controller';
 import { TelegramModule } from './telegram/telegram.module';
+import { PdfModule } from './pdf/pdf.module';
+import { SupabaseModule } from './supabase/supabase.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { TelegramModule } from './telegram/telegram.module';
     PaymentsModule,
     StripeModule,
     TelegramModule,
+    PdfModule,
+    SupabaseModule,
   ],
   controllers: [AppController, StripeController, StripeWebhooksController],
   providers: [AppService],

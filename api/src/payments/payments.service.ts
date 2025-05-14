@@ -5,13 +5,20 @@ import {
 } from '@nestjs/common';
 import Stripe from 'stripe';
 import { PrismaService } from '../prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PaymentsService {
   private stripe: Stripe;
+  private domainUrl: string;
 
-  constructor(private prisma: PrismaService) {
-    const key = process.env.STRIPE_SECRET_KEY;
+  constructor(
+    private prisma: PrismaService,
+    private config: ConfigService, // ✅ injecte le config service
+  ) {
+    const key = this.config.get<string>('STRIPE_SECRET_KEY');
+    this.domainUrl = this.config.get<string>('DOMAIN_URL') ?? 'http://localhost:4200';
+
     if (!key) {
       throw new Error('STRIPE_SECRET_KEY is not set');
     }
@@ -47,15 +54,14 @@ export class PaymentsService {
           product_data: {
             name: item.product.name,
             images: [
-              // ✅ En production, décommente ceci :
               // `https://argandici.com/assets/${item.product.image}`,
-              `./fiole.jpg`,
+              `https://source.unsplash.com/featured/?argan,oil`,
             ],
           },
         },
       })),
-      success_url: `${process.env.DOMAIN_URL}/order/success?orderId=${orderId}`,
-      cancel_url: `${process.env.DOMAIN_URL}/order/cancel?orderId=${orderId}`,
+      success_url: `${this.domainUrl}/order/success?orderId=${orderId}`,
+      cancel_url: `${this.domainUrl}/order/cancel?orderId=${orderId}`,
       metadata: {
         orderId,
       },
