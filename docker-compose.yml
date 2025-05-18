@@ -4,10 +4,12 @@ services:
     image: postgres:15
     container_name: argandici-db
     restart: unless-stopped
+    env_file:
+      - ./.env
     environment:
-      POSTGRES_DB: argandici
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
@@ -17,34 +19,41 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
+      target: development
     container_name: argandici-api
     restart: unless-stopped
     env_file:
-      - ./api/.env
+      - ./.env
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/argandici
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
-      DATABASE_USER: postgres
-      DATABASE_PASSWORD: postgres
-      DATABASE_NAME: argandici
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      CHOKIDAR_USEPOLLING: "true"
     ports:
       - "3000:3000"
     depends_on:
       - db
+    volumes:
+      - ./api:/usr/src/app
+      - api_node_modules:/usr/src/app/node_modules
 
   ui:
     build:
-      context: .
-      dockerfile: ui/Dockerfile
+      context: ./ui
+      dockerfile: Dockerfile
+      target: dev
     container_name: argandici-ui
     restart: unless-stopped
-    ports:
-      - "4000:4000"
     environment:
       API_URL: http://api:3000
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "4000:4000"
     depends_on:
       - api
+    volumes:
+      - ./ui:/app
+      - ui_node_modules:/app/node_modules
 
 volumes:
   db-data:
+  api_node_modules:
+  ui_node_modules:

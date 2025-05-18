@@ -19,5 +19,11 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src", "prisma"]
+  "include": ["src", "prisma"],
+  "watchOptions": {
+    "watchFile": "dynamicPriorityPolling",
+    "watchDirectory": "dynamicPriorityPolling",
+    "excludeFiles": ["**/*.spec.ts"],
+    "excludeDirectories": ["**/node_modules", "dist"]
+  }
 }

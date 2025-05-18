@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve ui",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
     "build:ssr": "ng run ui:build:production && ng run ui:server:production",
