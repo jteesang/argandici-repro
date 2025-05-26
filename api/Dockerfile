@@ -19,6 +19,8 @@ USER root
 
 WORKDIR /usr/src/app
 COPY --chown=node:node . .
+RUN npx prisma generate
+# Génération des fichiers Prisma
 USER node
 EXPOSE 3000
 CMD ["npm", "run", "start:dev"]

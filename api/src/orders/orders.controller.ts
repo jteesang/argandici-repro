@@ -7,6 +7,8 @@ import {
   UseGuards,
   Param,
   Patch,
+  NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -21,7 +23,6 @@ import { RolesGuard } from '../auth/roles.guard';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) { }
 
-  // ✅ accessible à tous : client connecté OU invité
   @Post()
   @UseGuards(OptionalJwtGuard)
   create(@Req() req, @Body() dto: CreateOrderDto) {
@@ -29,7 +30,6 @@ export class OrdersController {
     return this.ordersService.create(userId, dto);
   }
 
-  // 🔐 accessible uniquement aux utilisateurs connectés (admin ou client)
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
@@ -37,7 +37,16 @@ export class OrdersController {
     return this.ordersService.findAll();
   }
 
-  // 🔐 accessible uniquement aux admin
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id') id: string, @Req() req) {
+    const order = await this.ordersService.findOne(id, req.user);
+    if (!order) {
+      throw new NotFoundException(`Order with ID "${id}" not found or access denied.`);
+    }
+    return order;
+  }
+
   @Patch(':id/shipping')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)

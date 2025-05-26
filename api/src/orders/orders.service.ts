@@ -10,6 +10,7 @@ import { generateOrderEmailHtml } from '../mail/templates/order-confirmation';
 import { UpdateShippingDto } from './dto/update-shipping.dto';
 import { StripeService } from '../stripe/stripe.service';
 import { TelegramService } from '../telegram/telegram.service';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class OrdersService {
@@ -161,6 +162,33 @@ export class OrdersService {
   }
 
   async findAll() {
-    return this.prisma.order.findMany({ include: { items: true } });
+    return this.prisma.order.findMany({
+      include: { items: { include: { product: true } }, user: true }, // Optionnel: inclure user
+      orderBy: { date: 'desc' }
+    });
+  }
+
+  async findOne(orderId: string, userFromJwt: { userId: string; role: Role; email: string }) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+        user: true,
+      },
+    });
+
+    if (!order) {
+      return null;
+    }
+
+    if (userFromJwt.role !== Role.ADMIN && order.userId !== userFromJwt.userId) {
+      return null;
+    }
+
+    return order;
   }
 }
