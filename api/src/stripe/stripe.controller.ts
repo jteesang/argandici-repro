@@ -17,7 +17,7 @@ export class StripeController {
     const url = await this.stripeService.createCheckoutSession(
       body.orderId,
       body.items,
-      body.email, // on passe aussi l’email pour prefill
+      body.email, // on passe aussi l'email pour prefill
     );
     return { url };
   }

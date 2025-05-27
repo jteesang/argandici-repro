@@ -11,7 +11,7 @@ async function bootstrap() {
   // --- Middleware pour le webhook Stripe ---
   app.use('/webhooks/stripe', express.raw({ type: (_req) => true }));
 
-  // --- JSON pour le reste de l’API ---
+  // --- JSON pour le reste de l'API ---
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 

@@ -15,7 +15,7 @@ export class ContactComponent {
 
   onSubmit() {
     this.sent = true;
-    // Ici, tu mettras plus tard la logique pour envoyer le message à l’API
+    // Ici, tu mettras plus tard la logique pour envoyer le message à l'API
     setTimeout(() => { this.sent = false; }, 4000);
   }
 }
