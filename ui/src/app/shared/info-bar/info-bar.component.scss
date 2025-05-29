@@ -1,0 +1,20 @@
+.info-bar {
+  height: 2.5rem; /* ajuster la hauteur */
+  display: flex;
+  align-items: center;
+}
+
+// animation marquee
+@keyframes marquee {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.marquee {
+  display: inline-flex;
+  animation: marquee var(--marquee-duration, 15s) linear infinite;
+}
+
+.marquee:hover {
+  animation-play-state: paused;
+}

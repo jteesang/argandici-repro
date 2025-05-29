@@ -6,13 +6,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#D4AF37",
-        secondary: "#4E3620",
-        accent: "#F6E7B3",
-        "text-main": "#222",
-        success: "#86A26F",
-        danger: "#BC3A3A",
-        white: "#fff"
+        'argan-gold': '#c9a145',
+        'argan-dark': '#3c2f1d',
+        'argan-light': '#f8f5e9',
+      },
+      fontFamily: {
+        serif: ['Playfair Display', 'serif'],
+        sans: ['Raleway', 'sans-serif'],
+      },
+      animation: {
+        marquee: 'marquee var(--marquee-duration) linear infinite',
       }
     },
   },

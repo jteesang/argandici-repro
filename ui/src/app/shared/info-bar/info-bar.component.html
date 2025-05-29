@@ -1,0 +1,13 @@
+<div class="marquee animate-marquee" style="--marquee-duration: 12s">
+  <div class="info-bar overflow-hidden relative bg-primary text-white">
+    <div class="marquee flex items-center whitespace-nowrap" #marquee>
+      <ng-container *ngFor="let msg of messages">
+        <span class="mx-8">{{ msg }}</span>
+      </ng-container>
+      <!-- TODO duplique pour la boucle fluide -->
+      <ng-container *ngFor="let msg of messages">
+        <span class="mx-8">{{ msg }}</span>
+      </ng-container>
+    </div>
+  </div>
+</div>
