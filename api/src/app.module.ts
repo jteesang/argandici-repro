@@ -14,6 +14,7 @@ import { StripeWebhooksController } from './webhooks/stripe-webhooks.controller'
 import { TelegramModule } from './telegram/telegram.module';
 import { PdfModule } from './pdf/pdf.module';
 import { SupabaseModule } from './supabase/supabase.module';
+import { ContactController } from './contact/contact.controller';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { SupabaseModule } from './supabase/supabase.module';
     PdfModule,
     SupabaseModule,
   ],
-  controllers: [AppController, StripeController, StripeWebhooksController],
+  controllers: [AppController, StripeController, StripeWebhooksController, ContactController],
   providers: [AppService],
 })
 export class AppModule { }

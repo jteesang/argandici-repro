@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  padding: 2rem 0 4rem;
+  background-color: #fafafa;
+
+  @media (min-width: 1024px) {
+    padding: 4rem 0 8rem;
+  }
+}
+
+// Style pour les erreurs de formulaire
+.ng-invalid.ng-touched {
+  border-color: #f87171 !important;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+}
