@@ -14,8 +14,23 @@ module.exports = {
         serif: ['Playfair Display', 'serif'],
         sans: ['Raleway', 'sans-serif'],
       },
-      animation: {
-        marquee: 'marquee var(--marquee-duration) linear infinite',
+      spacing: {
+        'section': '5rem',
+        'section-lg': '8rem',
+        'faq-gap': '2.5rem',
+      },
+      maxHeight: {
+        '0': '0',
+        '96': '24rem',
+      },
+      opacity: {
+        '0': '0',
+        '100': '1',
+      },
+      transitionProperty: {
+        'height': 'height',
+        'max-height': 'max-height',
+        'opacity': 'opacity',
       }
     },
   },

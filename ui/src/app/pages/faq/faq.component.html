@@ -1,15 +1,58 @@
-<section class="max-w-2xl mx-auto my-12 px-4">
-  <h1 class="text-3xl md:text-4xl font-bold text-primary mb-8 text-center">
-    Foire aux questions
-  </h1>
-  <div *ngFor="let item of faqList; let i = index" class="mb-4 border rounded-lg overflow-hidden shadow">
-    <button (click)="toggle(i)"
-      class="w-full flex justify-between items-center px-4 py-3 bg-accent text-secondary font-medium focus:outline-none focus:ring-2 focus:ring-primary">
-      <span>{{item.question}}</span>
-      <span [class.rotate-180]="openIndex === i" class="transition-transform">&#9660;</span>
-    </button>
-    <div *ngIf="openIndex === i" class="px-4 py-3 bg-white text-secondary border-t">
-      {{item.answer}}
+<section class="max-w-7xl mx-auto my-section px-4 md:px-8">
+  <div class="text-center mb-section">
+    <div class="text-argan-gold font-sans uppercase tracking-wider mb-2">Questions fréquentes</div>
+    <h1 class="text-3xl md:text-4xl font-serif font-bold text-argan-dark mb-4">
+      Foire aux questions
+    </h1>
+    <p class="max-w-2xl mx-auto text-gray-600">
+      Trouvez les réponses aux questions les plus courantes sur notre huile d'argan,
+      nos procédés de fabrication et nos engagements.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <div class="order-2 lg:order-1">
+      <div class="space-y-faq-gap">
+        <div *ngFor="let item of faqList; let i = index"
+          class="border border-argan-light rounded-xl overflow-hidden shadow-sm transition-shadow hover:shadow-md">
+          <button (click)="toggle(i)"
+            class="w-full flex justify-between items-center px-6 py-5 bg-white text-left hover:bg-argan-light/30 transition-colors focus:outline-none focus:ring-2 focus:ring-argan-gold">
+            <span class="font-medium text-argan-dark text-lg">{{item.question}}</span>
+            <span [class.rotate-180]="openIndex === i" class="transform transition-transform text-argan-gold">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
+              </svg>
+            </span>
+          </button>
+
+          <div
+            [class]="'overflow-hidden transition-all duration-300 ease-in-out ' + (openIndex === i ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0')">
+            <div class="px-6 py-5 bg-argan-light text-argan-dark border-t border-argan-light">
+              {{item.answer}}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div class="order-1 lg:order-2 flex items-center">
+      <div class="bg-argan-light rounded-2xl p-8 h-full w-full">
+        <img src="assets/images/asset_2.jpg" alt="Illustration huile d'argan"
+          class="w-full h-full object-cover rounded-xl">
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-section-lg text-center">
+    <h3 class="font-serif text-xl text-argan-dark mb-4">Vous avez d'autres questions ?</h3>
+    <p class="mb-6 max-w-xl mx-auto text-gray-600">
+      Contactez-nous directement et notre équipe vous répondra dans les plus brefs délais.
+    </p>
+    <a routerLink="/contact"
+      class="inline-block bg-argan-gold hover:bg-argan-dark text-white px-8 py-3 rounded-full transition duration-300">
+      Nous contacter
+    </a>
   </div>
 </section>
