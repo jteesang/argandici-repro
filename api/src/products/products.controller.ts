@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Body, Patch, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Body, Patch, UseGuards, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
@@ -7,10 +7,13 @@ import { UpdateStockDto } from './dto/update-stock.dto';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) { }
 
   @Get()
-  findAll() {
+  findAll(@Query('category') category?: string) {
+    if (category) {
+      return this.productsService.findByCategory(category);
+    }
     return this.productsService.findAll();
   }
 

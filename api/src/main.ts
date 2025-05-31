@@ -15,6 +15,16 @@ async function bootstrap() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  app.enableCors({
+    origin: [
+      'http://localhost:4000', // Dev UI
+      'https://staging.argandici.com', // Staging
+      'https://www.argandici.com' // Production
+    ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   // Validation des DTO
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 

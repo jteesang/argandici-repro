@@ -1,0 +1,183 @@
+<section *ngIf="isLoading" class="max-w-7xl mx-auto py-16 px-4 text-center">
+  <div class="w-12 h-12 border-4 border-argan-gold border-t-transparent rounded-full animate-spin mx-auto"></div>
+  <p class="mt-4 text-argan-dark">Chargement du produit...</p>
+</section>
+
+<section *ngIf="!isLoading && product" class="max-w-7xl mx-auto py-12 px-4 md:px-8">
+  <!-- Breadcrumb -->
+  <nav class="text-sm mb-8">
+    <ol class="list-none p-0 inline-flex">
+      <li class="flex items-center">
+        <a routerLink="/" class="text-argan-gold hover:text-argan-dark transition">Accueil</a>
+        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+      </li>
+      <li class="flex items-center">
+        <a routerLink="/products" class="text-argan-gold hover:text-argan-dark transition">Produits</a>
+        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+      </li>
+      <li class="text-argan-dark">{{product.category}}</li>
+    </ol>
+  </nav>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <!-- Galerie d'images -->
+    <div>
+      <div class="bg-argan-light rounded-2xl p-8 mb-6">
+        <img [src]="selectedImage || product.img" [alt]="product.name" class="w-full h-96 object-contain">
+      </div>
+
+      <div class="flex gap-4">
+        <div *ngFor="let img of [product.img, 'assets/product-2.jpg', 'assets/product-3.jpg']"
+          class="cursor-pointer border-2 rounded-lg overflow-hidden" [class.border-argan-gold]="selectedImage === img"
+          (click)="changeImage(img)">
+          <img [src]="img" alt="Miniature" class="w-16 h-16 object-cover">
+        </div>
+      </div>
+    </div>
+
+    <!-- Détails du produit -->
+    <div>
+      <div class="mb-6">
+        <span class="bg-argan-gold text-white px-3 py-1 rounded-full text-sm">
+          {{product.category}}
+        </span>
+        <h1 class="font-serif text-3xl text-argan-dark mt-3 mb-2">{{product.name}}</h1>
+        <p class="text-2xl font-bold text-argan-gold mb-4">{{product.price | currency:'EUR'}}</p>
+
+        <div class="flex items-center mb-4">
+          <div class="flex text-yellow-400 mr-2">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+          </div>
+          <span class="text-gray-600">(42 avis)</span>
+        </div>
+
+        <p class="text-gray-700 mb-6">{{product.description}}</p>
+      </div>
+
+      <!-- Stock et quantité -->
+      <div class="mb-8">
+        <p class="font-medium text-argan-dark mb-2">Disponibilité :
+          <span [class]="product.stock > 0 ? 'text-green-600' : 'text-red-600'">
+            {{product.stock > 0 ? 'En stock (' + product.stock + ' unités)' : 'Rupture de stock'}}
+          </span>
+        </p>
+
+        <div class="flex items-center gap-6 mb-6">
+          <div class="flex items-center border border-gray-300 rounded-full">
+            <button class="px-4 py-2 text-gray-600 hover:text-argan-gold" (click)="decreaseQuantity()"
+              [disabled]="quantity <= 1">
+              <i class="fas fa-minus"></i>
+            </button>
+            <span class="px-4 py-2 font-medium">{{quantity}}</span>
+            <button class="px-4 py-2 text-gray-600 hover:text-argan-gold" (click)="increaseQuantity()">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+
+          <button
+            class="flex-1 bg-argan-gold hover:bg-argan-dark text-white py-3 px-6 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed"
+            (click)="addToCart()" [disabled]="product.stock === 0">
+            <i class="fas fa-shopping-cart mr-2"></i>
+            Ajouter au panier
+          </button>
+        </div>
+      </div>
+
+      <!-- Accordéon d'informations -->
+      <div class="border border-argan-light rounded-xl">
+        <div class="border-b border-argan-light">
+          <button class="w-full flex justify-between items-center px-6 py-4 text-left">
+            <span class="font-medium text-argan-dark">Description complète</span>
+            <i class="fas fa-chevron-down text-argan-gold"></i>
+          </button>
+          <div class="px-6 pb-4 text-gray-700">
+            {{product.details || 'Aucune description détaillée disponible.'}}
+          </div>
+        </div>
+
+        <div class="border-b border-argan-light">
+          <button class="w-full flex justify-between items-center px-6 py-4 text-left">
+            <span class="font-medium text-argan-dark">Bienfaits</span>
+            <i class="fas fa-chevron-down text-argan-gold"></i>
+          </button>
+          <div class="px-6 pb-4">
+            <ul class="list-disc pl-5 text-gray-700">
+              <li *ngFor="let benefit of product.benefits || ['Aucun bienfait spécifié']">{{benefit}}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <button class="w-full flex justify-between items-center px-6 py-4 text-left">
+            <span class="font-medium text-argan-dark">Utilisation</span>
+            <i class="fas fa-chevron-down text-argan-gold"></i>
+          </button>
+          <div class="px-6 pb-4 text-gray-700">
+            {{product.usage || 'Aucune information d\'utilisation disponible.'}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section avis clients -->
+  <div class="mt-16">
+    <h2 class="font-serif text-2xl text-argan-dark mb-6">Avis clients</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="bg-white p-6 rounded-xl shadow-sm">
+        <div class="flex items-center mb-4">
+          <div class="bg-gray-200 border-2 border-dashed rounded-full w-12 h-12 mr-4"></div>
+          <div>
+            <p class="font-medium text-argan-dark">Marie D.</p>
+            <div class="flex text-yellow-400">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+          </div>
+        </div>
+        <p class="text-gray-700">
+          "J'utilise cette huile d'argan depuis un mois sur mon visage et mes cheveux.
+          La différence est incroyable ! Ma peau est plus hydratée et mes cheveux ont retrouvé leur brillance."
+        </p>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-sm">
+        <div class="flex items-center mb-4">
+          <div class="bg-gray-200 border-2 border-dashed rounded-full w-12 h-12 mr-4"></div>
+          <div>
+            <p class="font-medium text-argan-dark">Thomas L.</p>
+            <div class="flex text-yellow-400">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+            </div>
+          </div>
+        </div>
+        <p class="text-gray-700">
+          "L'huile alimentaire a un goût de noisette délicieux. Je l'utilise dans mes salades et même sur du pain.
+          Qualité exceptionnelle et livraison rapide."
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section *ngIf="!isLoading && !product" class="max-w-7xl mx-auto py-24 px-4 text-center">
+  <i class="fas fa-box-open text-5xl text-gray-300 mb-4"></i>
+  <h2 class="font-serif text-2xl text-argan-dark mb-2">Produit introuvable</h2>
+  <p class="text-gray-600 mb-6">Le produit que vous recherchez n'existe pas ou a été supprimé.</p>
+  <a routerLink="/products"
+    class="inline-block bg-argan-gold hover:bg-argan-dark text-white px-6 py-3 rounded-full transition">
+    Voir tous nos produits
+  </a>
+</section>

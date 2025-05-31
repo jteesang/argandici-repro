@@ -1,33 +1,58 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ProductService, Product } from '../../services/product.service';
+import { HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-products',
-  templateUrl: './products.component.html',
-  styleUrls: ['./products.component.scss'],
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule, HttpClientModule],
+  templateUrl: './products.component.html',
+  styleUrls: ['./products.component.scss']
 })
 export class ProductsComponent {
-  products = [
-    {
-      name: "Huile d'argan alimentaire 100ml",
-      price: 14.90,
-      img: "assets/argan-nature.jpg",
-      description: "Huile d'argan 100% pure, pressée à froid, idéale en cuisine et en soin santé."
-    },
-    {
-      name: "Huile d'argan cosmétique 50ml",
-      price: 11.90,
-      img: "assets/argan-cosmetic.jpg",
-      description: "Huile d'argan bio pour visage, corps et cheveux. Hydrate, protège et régénère."
-    },
-    {
-      name: "Huile d'argan parfumée à la rose 50ml",
-      price: 13.90,
-      img: "assets/argan-rose.jpg",
-      description: "Un soin unique à la rose pour peaux sensibles, parfum doux et naturel."
+  products: Product[] = [];
+  categories: string[] = ['Tous', 'Cosmétique', 'Alimentaire', 'Soins'];
+  selectedCategory: string = 'Tous';
+  isLoading = true;
+
+  constructor(private productService: ProductService) { }
+
+  ngOnInit() {
+    this.loadProducts();
+  }
+
+  loadProducts() {
+    this.isLoading = true;
+    this.productService.getAllProducts().subscribe({
+      next: (products) => {
+        this.products = products;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading products', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  filterByCategory(category: string) {
+    this.selectedCategory = category;
+    if (category === 'Tous') {
+      this.loadProducts();
+    } else {
+      this.isLoading = true;
+      this.productService.getProductsByCategory(category).subscribe({
+        next: (products) => {
+          this.products = products;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error filtering products', err);
+          this.isLoading = false;
+        }
+      });
     }
-    // Ajoute tes vrais produits ici !
-  ];
+  }
 }

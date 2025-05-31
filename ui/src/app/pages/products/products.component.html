@@ -1,17 +1,70 @@
-<section class="max-w-6xl mx-auto py-12 px-4">
-  <h1 class="text-3xl md:text-4xl font-bold text-primary mb-10 text-center">
-    Nos produits d'argan
-  </h1>
-  <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-    <div *ngFor="let p of products"
-      class="bg-white rounded-2xl shadow-lg flex flex-col items-center p-6 hover:scale-105 hover:shadow-xl transition cursor-pointer">
-      <img [src]="p.img" [alt]="p.name" class="h-36 w-36 object-cover rounded-xl mb-4 border-2 border-accent" />
-      <h2 class="text-xl font-semibold text-secondary mb-2">{{p.name}}</h2>
-      <div class="text-primary font-bold text-lg mb-1">{{p.price | currency:'EUR'}}</div>
-      <p class="text-sm text-gray-600 mb-4 text-center">{{p.description}}</p>
-      <button class="bg-primary text-white rounded-full px-6 py-2 font-semibold shadow hover:bg-secondary transition">
-        Voir le produit
-      </button>
+<section class="max-w-7xl mx-auto py-12 px-4 md:px-8">
+  <div class="text-center mb-16">
+    <h1 class="font-serif text-4xl text-argan-dark mb-4">Notre sélection d'huile d'argan</h1>
+    <p class="max-w-2xl mx-auto text-gray-600">
+      Découvrez notre gamme d'huiles d'argan 100% pures, pressées à froid et importées directement du Maroc.
+    </p>
+  </div>
+
+  <!-- Filtres par catégorie -->
+  <div class="flex flex-wrap justify-center gap-4 mb-12">
+    <button *ngFor="let category of categories" [class]="'px-6 py-2 rounded-full transition-colors ' +
+              (selectedCategory === category ?
+               'bg-argan-gold text-white' :
+               'bg-argan-light text-argan-dark hover:bg-argan-gold/20')" (click)="filterByCategory(category)">
+      {{category}}
+    </button>
+  </div>
+
+  <!-- Liste des produits -->
+  <div *ngIf="isLoading" class="flex justify-center py-16">
+    <div class="w-12 h-12 border-4 border-argan-gold border-t-transparent rounded-full animate-spin"></div>
+  </div>
+
+  <div *ngIf="!isLoading" class="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    <div *ngFor="let product of products" [routerLink]="['/product', product.id]"
+      class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform hover:scale-[1.02] cursor-pointer group">
+      <div class="relative">
+        <img [src]="product.img" [alt]="product.name" class="w-full h-64 object-cover">
+        <div *ngIf="product.stock === 0"
+          class="absolute top-4 right-4 bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
+          Rupture de stock
+        </div>
+        <div *ngIf="product.stock > 0 && product.stock < 10"
+          class="absolute top-4 right-4 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
+          Bientôt épuisé
+        </div>
+      </div>
+
+      <div class="p-6">
+        <div class="flex justify-between items-start mb-2">
+          <h2 class="font-serif text-xl text-argan-dark group-hover:text-argan-gold transition">{{product.name}}</h2>
+          <span class="font-bold text-argan-gold text-lg">{{product.price | currency:'EUR'}}</span>
+        </div>
+
+        <p class="text-gray-600 mb-4 text-sm">{{product.description}}</p>
+
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-500">
+            {{product.stock > 0 ? product.stock + ' en stock' : 'Indisponible'}}
+          </span>
+          <button
+            class="bg-argan-gold hover:bg-argan-dark text-white px-4 py-2 rounded-full transition flex items-center"
+            [disabled]="product.stock === 0">
+            <i class="fas fa-shopping-cart mr-2"></i>
+            Ajouter
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Aucun produit -->
+  <div *ngIf="!isLoading && products.length === 0" class="text-center py-16">
+    <i class="fas fa-box-open text-5xl text-gray-300 mb-4"></i>
+    <h3 class="font-serif text-xl text-argan-dark mb-2">Aucun produit trouvé</h3>
+    <p class="text-gray-600 max-w-md mx-auto">
+      Nous n'avons trouvé aucun produit dans cette catégorie. Essayez une autre catégorie ou revenez plus tard.
+    </p>
   </div>
 </section>
