@@ -8,7 +8,7 @@ export interface Product {
   name: string;
   price: number;
   description: string;
-  img: string;
+  image: string;
   stock: number;
   category: string;
   details?: string;
@@ -25,14 +25,17 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
+  // Récupère tous les produits
   getAllProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(this.apiUrl);
   }
 
+  // Récupère un seul produit par son ID
   getProductById(id: string): Observable<Product> {
     return this.http.get<Product>(`${this.apiUrl}/${id}`);
   }
 
+  // Récupère les produits d’une catégorie donnée
   getProductsByCategory(category: string): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.apiUrl}?category=${category}`);
   }

@@ -26,8 +26,8 @@ export class ProductsComponent {
   loadProducts() {
     this.isLoading = true;
     this.productService.getAllProducts().subscribe({
-      next: (products) => {
-        this.products = products;
+      next: (list) => {
+        this.products = list;
         this.isLoading = false;
       },
       error: (err) => {
@@ -39,17 +39,27 @@ export class ProductsComponent {
 
   filterByCategory(category: string) {
     this.selectedCategory = category;
+    this.isLoading = true;
+
     if (category === 'Tous') {
-      this.loadProducts();
-    } else {
-      this.isLoading = true;
-      this.productService.getProductsByCategory(category).subscribe({
-        next: (products) => {
-          this.products = products;
+      this.productService.getAllProducts().subscribe({
+        next: (list) => {
+          this.products = list;
           this.isLoading = false;
         },
         error: (err) => {
-          console.error('Error filtering products', err);
+          console.error('Error loading products', err);
+          this.isLoading = false;
+        }
+      });
+    } else {
+      this.productService.getProductsByCategory(category).subscribe({
+        next: (list) => {
+          this.products = list;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error filtrering products', err);
           this.isLoading = false;
         }
       });

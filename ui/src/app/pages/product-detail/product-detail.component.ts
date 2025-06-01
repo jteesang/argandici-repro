@@ -28,7 +28,7 @@ export class ProductDetailComponent {
       this.productService.getProductById(id).subscribe({
         next: (product) => {
           this.product = product;
-          this.selectedImage = product.img;
+          this.selectedImage = product.image;
           this.isLoading = false;
         },
         error: (err) => {

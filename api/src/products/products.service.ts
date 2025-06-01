@@ -5,6 +5,9 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ProductsService {
   constructor(private prisma: PrismaService) { }
 
+  /**
+   * Récupère tous les produits (avec id, name, price, description, image, stock, category, createdAt).
+   */
   findAll() {
     return this.prisma.product.findMany({
       select: {
@@ -20,6 +23,10 @@ export class ProductsService {
     });
   }
 
+  /**
+   * Récupère un seul produit par son id, avec les mêmes champs que findAll.
+   * (On retire ici details/benefits/usage/ingredients car ils n'existent plus dans schema.prisma.)
+   */
   findOne(id: string) {
     return this.prisma.product.findUnique({
       where: { id },
@@ -31,15 +38,14 @@ export class ProductsService {
         image: true,
         stock: true,
         category: true,
-        details: true,
-        benefits: true,
-        usage: true,
-        ingredients: true,
         createdAt: true,
       }
     });
   }
 
+  /**
+   * Récupère tous les produits d'une catégorie donnée.
+   */
   findByCategory(category: string) {
     return this.prisma.product.findMany({
       where: { category },
@@ -56,6 +62,9 @@ export class ProductsService {
     });
   }
 
+  /**
+   * Met à jour le stock d'un produit (pour le PATCH /products/:id/stock).
+   */
   updateStock(productId: string, stock: number) {
     return this.prisma.product.update({
       where: { id: productId },

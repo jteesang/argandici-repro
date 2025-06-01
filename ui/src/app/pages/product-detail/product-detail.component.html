@@ -23,11 +23,11 @@
     <!-- Galerie d'images -->
     <div>
       <div class="bg-argan-light rounded-2xl p-8 mb-6">
-        <img [src]="selectedImage || product.img" [alt]="product.name" class="w-full h-96 object-contain">
+        <img [src]="selectedImage || product.image" [alt]="product.name" class="w-full h-96 object-contain">
       </div>
 
       <div class="flex gap-4">
-        <div *ngFor="let img of [product.img, 'assets/product-2.jpg', 'assets/product-3.jpg']"
+        <div *ngFor="let img of [product.image, 'assets/product-2.jpg', 'assets/product-3.jpg']"
           class="cursor-pointer border-2 rounded-lg overflow-hidden" [class.border-argan-gold]="selectedImage === img"
           (click)="changeImage(img)">
           <img [src]="img" alt="Miniature" class="w-16 h-16 object-cover">
