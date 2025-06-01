@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ProductService, Product } from '../../services/product.service';
 import { HttpClientModule } from '@angular/common/http';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -19,7 +20,8 @@ export class ProductDetailComponent {
 
   constructor(
     private route: ActivatedRoute,
-    private productService: ProductService
+    private productService: ProductService,
+    private cartService: CartService
   ) { }
 
   ngOnInit() {
@@ -55,13 +57,16 @@ export class ProductDetailComponent {
 
   addToCart() {
     if (this.product) {
-      console.log('Added to cart:', {
-        id: this.product.id,
+      // On prend l’image principale (product.image) ou selectedImage
+      this.cartService.addToCart({
+        productId: this.product.id,
         name: this.product.name,
         price: this.product.price,
-        quantity: this.quantity
-      });
-      // Logique pour ajouter au panier
+        image: this.product.image,
+      }, this.quantity);
+
+      // Optionnel : afficher un toast / notification
+      alert(`Ajouté ${this.quantity} x "${this.product.name}" au panier.`);
     }
   }
 }
