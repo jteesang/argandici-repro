@@ -6,16 +6,18 @@
   </a>
   <!-- Desktop menu -->
   <ul class="hidden md:flex gap-6 items-center font-medium cursor-pointer">
-    <li><a routerLink="/" routerLinkActive="text-primary" class="hover:text-primary transition">Accueil</a></li>
-    <li><a routerLink="/products" routerLinkActive="text-primary" class="hover:text-primary transition">Produits</a>
+    <li><a routerLink="/" routerLinkActive="text-primary" class="hover:text-secondary transition">Accueil</a></li>
+    <li><a routerLink="/products" routerLinkActive="text-primary" class="hover:text-secondary transition">Produits</a>
     </li>
-    <li><a routerLink="/faq" routerLinkActive="text-primary" class="hover:text-primary transition">FAQ</a></li>
-    <li><a routerLink="/about" routerLinkActive="text-primary" class="hover:text-primary transition">Qui sommes-nous</a>
+    <li><a routerLink="/faq" routerLinkActive="text-primary" class="hover:text-secondary transition">FAQ</a></li>
+    <li><a routerLink="/about" routerLinkActive="text-primary" class="hover:text-secondary transition">Qui
+        sommes-nous</a>
     </li>
-    <li><a routerLink="/contact" routerLinkActive="text-primary" class="hover:text-primary transition">Contact</a></li>
+    <li><a routerLink="/contact" routerLinkActive="text-primary" class="hover:text-secondary transition">Contact</a>
+    </li>
   </ul>
   <!-- Icône Panier (Desktop & Mobile) -->
-  <a routerLink="/cart" class="relative text-gray-700 hover:text-primary transition ml-4 md:ml-0">
+  <a routerLink="/cart" routerLinkActive="text-primary" class="relative hover:text-secondary transition ml-4 md:ml-0">
     <i class="fas fa-shopping-cart text-xl"></i>
     <span *ngIf="(cartCount$ | async) as count"
       class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
@@ -29,10 +31,11 @@
   </button>
   <!-- Mobile menu -->
   <ul *ngIf="menuOpen" class="absolute left-0 top-full w-full bg-white shadow-lg md:hidden flex flex-col py-2 z-50">
-    <li><a (click)="closeMenu()" routerLink="/" class="block px-4 py-2 hover:text-primary">Accueil</a></li>
-    <li><a (click)="closeMenu()" routerLink="/products" class="block px-4 py-2 hover:text-primary">Produits</a></li>
-    <li><a (click)="closeMenu()" routerLink="/faq" class="block px-4 py-2 hover:text-primary">FAQ</a></li>
-    <li><a (click)="closeMenu()" routerLink="/about" class="block px-4 py-2 hover:text-primary">Qui sommes-nous</a></li>
-    <li><a (click)="closeMenu()" routerLink="/contact" class="block px-4 py-2 hover:text-primary">Contact</a></li>
+    <li><a (click)="closeMenu()" routerLink="/" class="block px-4 py-2 hover:text-secondary">Accueil</a></li>
+    <li><a (click)="closeMenu()" routerLink="/products" class="block px-4 py-2 hover:text-secondary">Produits</a></li>
+    <li><a (click)="closeMenu()" routerLink="/faq" class="block px-4 py-2 hover:text-secondary">FAQ</a></li>
+    <li><a (click)="closeMenu()" routerLink="/about" class="block px-4 py-2 hover:text-secondary">Qui sommes-nous</a>
+    </li>
+    <li><a (click)="closeMenu()" routerLink="/contact" class="block px-4 py-2 hover:text-secondary">Contact</a></li>
   </ul>
 </nav>
