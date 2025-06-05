@@ -1,23 +1,28 @@
 <nav class="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between sticky top-0 z-50">
   <!-- Logo -->
-  <a routerLink="/" class="flex items-center gap-2 cursor-pointer">
+  <a routerLink="/" class="flex items-center gap-2 cursor-pointer hover:underline hover:text-argan-gold">
     <img src="assets/images/logo.png" alt="Logo" class="h-8 w-8 rounded-full" />
     <span class="text-xl font-bold text-primary">Argan d'ici</span>
   </a>
   <!-- Desktop menu -->
   <ul class="hidden md:flex gap-6 items-center font-medium cursor-pointer">
-    <li><a routerLink="/" routerLinkActive="text-primary" class="hover:text-secondary transition">Accueil</a></li>
-    <li><a routerLink="/products" routerLinkActive="text-primary" class="hover:text-secondary transition">Produits</a>
+    <li><a routerLink="/" routerLinkActive="text-primary"
+        class="hover:text-secondary hover:underline hover:text-argan-gold transition">Accueil</a></li>
+    <li><a routerLink="/products" routerLinkActive="text-primary"
+        class="hover:text-secondary hover:underline hover:text-argan-gold transition">Produits</a>
     </li>
-    <li><a routerLink="/faq" routerLinkActive="text-primary" class="hover:text-secondary transition">FAQ</a></li>
-    <li><a routerLink="/about" routerLinkActive="text-primary" class="hover:text-secondary transition">Qui
+    <li><a routerLink="/faq" routerLinkActive="text-primary"
+        class="hover:text-secondary hover:underline hover:text-argan-gold transition">FAQ</a></li>
+    <li><a routerLink="/about" routerLinkActive="text-primary"
+        class="hover:text-secondary hover:underline hover:text-argan-gold transition">Qui
         sommes-nous</a>
     </li>
-    <li><a routerLink="/contact" routerLinkActive="text-primary" class="hover:text-secondary transition">Contact</a>
+    <li><a routerLink="/contact" routerLinkActive="text-primary"
+        class="hover:text-secondary hover:underline hover:text-argan-gold transition">Contact</a>
     </li>
   </ul>
   <!-- Icône Panier (Desktop & Mobile) -->
-  <a routerLink="/cart" routerLinkActive="text-primary" class="relative hover:text-secondary transition ml-4 md:ml-0">
+  <a routerLink="/cart" routerLinkActive="text-primary" class="relative hover:text-argan-gold transition ml-4 md:ml-0">
     <i class="fas fa-shopping-cart text-xl"></i>
     <span *ngIf="(cartCount$ | async) as count"
       class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
