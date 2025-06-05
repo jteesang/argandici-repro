@@ -1,0 +1,11 @@
+<div [class]="'border rounded-lg p-4 flex items-start shadow-lg ' + bgClass">
+  <div [class]="'mt-1 mr-3 text-lg ' + textClass">
+    <i [class]="iconClass"></i>
+  </div>
+  <div [class]="'flex-1 ' + textClass">
+    {{ toast.message }}
+  </div>
+  <button (click)="close()" class="ml-3 text-gray-500 hover:text-gray-700">
+    <i class="fas fa-times"></i>
+  </button>
+</div>

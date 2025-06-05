@@ -78,11 +78,17 @@
             </button>
           </div>
 
-          <button
-            class="flex-1 bg-argan-gold hover:bg-argan-dark text-white py-3 px-6 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed"
-            (click)="addToCart()" [disabled]="product.stock === 0">
-            <i class="fas fa-shopping-cart mr-2"></i>
-            Ajouter au panier
+          <button [class]="'flex-1 bg-argan-gold hover:bg-argan-dark text-white py-3 px-6 rounded-full transition flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed' +
+          (isAddingToCart ? ' animate-pulse' : '')" (click)="addToCart()"
+            [disabled]="product.stock === 0 || isAddingToCart">
+            <span *ngIf="!isAddingToCart">
+              <i class="fas fa-shopping-cart mr-2"></i>
+              Ajouter au panier
+            </span>
+            <span *ngIf="isAddingToCart">
+              <i class="fas fa-spinner fa-spin mr-2"></i>
+              Ajout en cours...
+            </span>
           </button>
         </div>
       </div>

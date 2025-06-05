@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ProductService, Product } from '../../services/product.service';
 import { HttpClientModule } from '@angular/common/http';
 import { CartService } from '../../services/cart.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -17,11 +18,13 @@ export class ProductDetailComponent {
   isLoading = true;
   selectedImage: string | null = null;
   quantity = 1;
+  isAddingToCart = false;
 
   constructor(
     private route: ActivatedRoute,
     private productService: ProductService,
-    private cartService: CartService
+    private cartService: CartService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
@@ -56,17 +59,22 @@ export class ProductDetailComponent {
   }
 
   addToCart() {
-    if (this.product) {
-      // On prend l’image principale (product.image) ou selectedImage
-      this.cartService.addToCart({
+    if (this.product && this.product.stock > 0) {
+      this.isAddingToCart = true;
+
+      this.cartService.addItem({
         productId: this.product.id,
         name: this.product.name,
         price: this.product.price,
-        image: this.product.image,
+        image: this.product.image
       }, this.quantity);
 
-      // Optionnel : afficher un toast / notification
-      alert(`Ajouté ${this.quantity} x "${this.product.name}" au panier.`);
+      this.notificationService.showToast('Produit ajouté au panier', 'success');
+
+      // Animation feedback
+      setTimeout(() => {
+        this.isAddingToCart = false;
+      }, 1000);
     }
   }
 }
