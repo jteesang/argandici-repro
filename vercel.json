@@ -1,5 +1,29 @@
 {
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/src/main.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["../prisma/**"]
+      }
+    },
+    {
+      "src": "ui/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/ui/browser"
+      }
+    }
+  ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/src/main.ts"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/ui/server.ts"
+    }
   ]
 }
