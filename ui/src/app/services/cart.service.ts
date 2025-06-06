@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core'; // <--- Inject et PLATFORM_ID sont nécessaires
+import { isPlatformBrowser } from '@angular/common'; // <--- isPlatformBrowser est nécessaire
 import { BehaviorSubject } from 'rxjs';
 
 export interface CartItem {
@@ -15,21 +16,31 @@ export interface CartItem {
 export class CartService {
   private cartSubject = new BehaviorSubject<CartItem[]>([]);
   cart$ = this.cartSubject.asObservable();
+  private isBrowser: boolean; // <--- On stocke l'information ici
 
-  constructor() {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      this.cartSubject.next(JSON.parse(savedCart));
+  constructor(@Inject(PLATFORM_ID) private platformId: object) { // <--- injecte le PLATFORM_ID
+    this.isBrowser = isPlatformBrowser(this.platformId); // <--- On vérifie si on est dans un navigateur
+
+    if (this.isBrowser) { // <--- ON PROTÈGE L'ACCÈS
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) {
+        this.cartSubject.next(JSON.parse(savedCart));
+      }
     }
   }
 
   private saveCart(cart: CartItem[]) {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    if (this.isBrowser) { // <--- ON PROTÈGE L'ACCÈS
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+    // On met à jour le BehaviorSubject dans tous les cas (serveur et navigateur)
+    // pour que l'état en mémoire de l'application soit cohérent.
     this.cartSubject.next(cart);
   }
 
   addItem(item: Omit<CartItem, 'quantity'>, quantity: number = 1) {
-    const cart = this.cartSubject.value;
+    // Pas besoin de changer cette méthode, car elle appelle saveCart() qui est maintenant protégée.
+    const cart = [...this.cartSubject.value]; // On crée une nouvelle copie pour l'immutabilité
     const existingItem = cart.find(i => i.productId === item.productId);
 
     if (existingItem) {
@@ -42,7 +53,7 @@ export class CartService {
   }
 
   updateQuantity(productId: string, quantity: number) {
-    const cart = this.cartSubject.value;
+    const cart = [...this.cartSubject.value];
     const item = cart.find(i => i.productId === productId);
 
     if (item) {
