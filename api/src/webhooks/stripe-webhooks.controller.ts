@@ -29,7 +29,7 @@ export class StripeWebhooksController {
   ) {
     const secretKey = this.config.get<string>('STRIPE_SECRET_KEY');
     if (!secretKey) throw new Error('STRIPE_SECRET_KEY not set in .env');
-    this.stripe = new Stripe(secretKey, { apiVersion: '2025-04-30.basil' });
+    this.stripe = new Stripe(secretKey, { apiVersion: '2025-05-28.basil' });
   }
 
   @Post()

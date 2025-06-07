@@ -1,4 +1,10 @@
 {
+  "name": "argandici-monorepo",
+  "private": true,
+  "workspaces": [
+    "api",
+    "ui"
+  ],
   "devDependencies": {
     "eslint": "^9.26.0",
     "eslint-config-prettier": "^10.1.5",

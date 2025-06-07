@@ -11,7 +11,7 @@ export class StripeService {
     if (!key) throw new Error('STRIPE_SECRET_KEY is not set');
 
     this.stripe = new Stripe(key, {
-      apiVersion: '2025-04-30.basil',
+      apiVersion: '2025-05-28.basil',
     });
   }
 

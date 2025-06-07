@@ -5,7 +5,7 @@
       "src": "api/src/main.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["../prisma/**"]
+        "includeFiles": ["prisma/**"]
       }
     },
     {
@@ -18,11 +18,11 @@
   ],
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/:path*",
       "destination": "/api/src/main.ts"
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": "/ui/server.ts"
     }
   ]
