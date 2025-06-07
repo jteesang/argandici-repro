@@ -12,7 +12,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": false,
-    "isolatedModules": false
+    "isolatedModules": false,
+    "types": ["node"],
   },
   "files": [
     "src/server.ts"

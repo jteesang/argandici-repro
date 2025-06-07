@@ -6,6 +6,7 @@ ARG NODE_IMAGE=node:18-alpine
 ########################################
 FROM ${NODE_IMAGE} AS base
 WORKDIR /usr/src/app
+RUN apk add --no-cache curl
 COPY --chown=node:node package*.json ./
 RUN npm ci
 # Installe SWC globalement si nécessaire (optionnel)
