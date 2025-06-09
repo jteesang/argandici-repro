@@ -8,7 +8,7 @@ FROM ${NODE_IMAGE} AS base
 WORKDIR /usr/src/app
 RUN apk add --no-cache curl
 COPY --chown=node:node package*.json ./
-RUN npm ci
+RUN npm install
 # Installe SWC globalement si nécessaire (optionnel)
 # RUN npm install -g @swc/cli @swc/core
 
