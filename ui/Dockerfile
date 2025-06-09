@@ -7,7 +7,7 @@ ARG NODE_IMAGE=node:18.20.8-alpine3.21
 FROM ${NODE_IMAGE} AS base
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 ##################################
 #      2) STAGE DEV              #
@@ -34,7 +34,7 @@ WORKDIR /app
 COPY --from=builder /app/dist/ui/browser ./browser
 COPY --from=builder /app/dist/ui/server  ./server
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 USER node
 EXPOSE 4000
 CMD ["node","server/main.js"]
