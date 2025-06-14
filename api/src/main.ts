@@ -3,6 +3,15 @@ import { AppModule } from './app.module';
 import * as express from 'express';
 import { ValidationPipe } from '@nestjs/common';
 
+export async function createNestApplication() {
+  const app = await NestFactory.create(AppModule);
+  return app;
+}
+
+if (require.main === module) {
+  bootstrap();
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: false, // désactive le parser JSON global
@@ -30,4 +39,4 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
-bootstrap();
+
